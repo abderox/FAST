@@ -151,7 +151,7 @@ function Message({ path , handleClose }) {
               "video/mp4,video/x-m4v,video/*"
              } />
                <VideoFileOutlined sx={{ fontSize: 35 ,color: pink[700] }} />
-            Go To File
+            {path}
           </Button>
           <InputLabel
             htmlFor="contained-button-file"
@@ -383,9 +383,9 @@ function App() {
             Download Youtube Videos
           </Typography>
 
-          {data?.path &&
+          {data?.name &&
             <Message
-              path={data.path}
+              path={data.name}
               handleClose={resetData}
             />
           }
