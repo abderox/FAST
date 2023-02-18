@@ -23,6 +23,7 @@ FAST is a browser extension that allows you to easily download videos from YouTu
 4. User-friendly experience
 
 
+
 ## Demo
 
 <p
@@ -70,6 +71,8 @@ FAST is a browser extension that allows you to easily download videos from YouTu
 
 ### NB : Repeat 1 to 3 for both backend and frontend
 
+💻 [Link to Backend](https://github.com/abderox/FAST-SERVER)
+
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. Run `npm start` to start the server
@@ -83,7 +86,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Disclaimer
 
-The FAST extension is for educational purposes only. The creators of this extension do not condone the downloading of copyrighted material without the express permission of the owner. Use this extension at your own risk.
+- The FAST extension is for educational purposes only. The creators of this extension do not condone the downloading of copyrighted material without the express permission of the owner. Use this extension at your own risk.
+- The app is currently in development, with the global `chrome` object and popup communication with the background and content script still to be added
 
 ## License
 
