@@ -1,70 +1,90 @@
-# Getting Started with Create React App
+# FAST  V1.0.0
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+FAST is a browser extension that allows you to easily download videos from YouTube.
 
-## Available Scripts
+<p
+ align="center"
+>
+    <img
+    src="./github/downloader.png"
+    alt="logo"
+    width="200"
+    height="200"
+    />
+</p>
 
-In the project directory, you can run:
+## Features V1.0.0
 
-### `npm start`
+- The FAST extension offers the following features:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Easy to use interface for downloading YouTube videos
+2. Fast and efficient downloading
+3. Ability to download videos in various formats and quality levels
+4. User-friendly experience
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+## Demo
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p
+ align="center"
+>
+    <img
+    src="./github/demo1.png"
+    alt="logo"
 
-### `npm run build`
+    />
+</p>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<p
+ align="center"
+>
+    <img
+    src="./github/demo2.png"
+    alt="logo"
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    />
+</p>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<p
+ align="center"
+>
+    <img
+    src="./github/demo3.png"
+    alt="logo"
 
-### `npm run eject`
+    />
+</p>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Main Technologies
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- React
+- Node.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Main packages
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Socket.io
+- ytdl-core
+- Material-ui
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### NB : Repeat 1 to 3 for both backend and frontend
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Clone the repository
+2. Run `npm install` to install dependencies
+3. Run `npm start` to start the server
+4. Build the React project using `npm run build`
+5. Install the extension by navigating to `chrome://extensions`, enabling developer mode, and clicking "Load unpacked"
+6. Select the `build` folder from the cloned repository
 
-### Code Splitting
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-### Analyzing the Bundle Size
+## Disclaimer
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The FAST extension is for educational purposes only. The creators of this extension do not condone the downloading of copyrighted material without the express permission of the owner. Use this extension at your own risk.
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[MIT](https://choosealicense.com/licenses/mit/)
