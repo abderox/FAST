@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Container, Typography, TextField, Select, MenuItem, Button, ThemeProvider, createTheme, FormControl, InputLabel, LinearProgress, CircularProgressProps, CircularProgress, Snackbar, Alert, IconButton } from '@mui/material';
-import { Close, DownloadDoneOutlined, DownloadForOfflineOutlined, DownloadOutlined, VideoFileOutlined } from '@mui/icons-material';
+import { Box, Container, Typography, TextField, Select, MenuItem, Button, ThemeProvider, createTheme, FormControl, InputLabel, LinearProgress, CircularProgressProps, CircularProgress, Snackbar, Alert, IconButton, Chip, Avatar } from '@mui/material';
+import { CancelOutlined, Close, DownloadOutlined, SignalWifiOff, VideoFileOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { orange, pink, purple } from '@mui/material/colors';
+import { orange, pink, purple, red } from '@mui/material/colors';
 import logo from "./logo.png";
-import { openFile } from './chrome-utils';
+import useOnlineStatus from './hooks/useOnlineStatus';
+// import { openFile } from './chrome-utils';
 
 const theme = createTheme(
   //violet
@@ -15,6 +16,8 @@ const theme = createTheme(
     palette: {
       primary: {
         main: '#9c27b0',
+        success: '#16FF00',
+        error: '#FF0032'
       },
       secondary: {
         main: '#f50057',
@@ -33,16 +36,16 @@ const theme = createTheme(
 
 function CircularProgressWithLabel(props) {
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', my: 2 , ml:3 }}>
-     
-      <CircularProgress  variant="determinate" value={100}  size={250} sx={{
+    <Box sx={{ position: 'relative', display: 'inline-flex', my: 2, ml: 1 }}>
+
+      <CircularProgress variant="determinate" value={100} size={250} sx={{
         color: pink[100],
-        position:'relative',
-  
+        position: 'relative',
+
       }} />
-      <CircularProgress  variant="determinate" {...props} size={250} sx={{
+      <CircularProgress variant="determinate" {...props} size={250} sx={{
         color: purple[500],
-        position:'absolute',
+        position: 'absolute',
         top: 0,
         left: 0,
         bottom: 0,
@@ -90,8 +93,19 @@ function CircularProgressWithLabel(props) {
 
 function LinearIndeterminate() {
   return (
-    <Box sx={{ width: '100%', my: '4' }}>
+    <Box sx={{ width: '100%', my: '4', display: 'flex', flexDirection: 'column' }}>
       <LinearProgress />
+      <Typography
+        variant="h6"
+        align="center"
+        color="text.secondary"
+        gutterBottom
+        sx={{
+          fontSize: '13px'
+        }}
+      >
+        Processing ...
+      </Typography>
     </Box>
   );
 }
@@ -125,13 +139,32 @@ function SnackBar({ message, type, handleClose, open }) {
 }
 
 
+function AbortButton({ onClick }) {
+  return (
+    <Button
+      size="small"
+      variant="outlined"
+      color="error"
+      onClick={onClick}
+      startIcon={<CancelOutlined sx={{ color: red[500] }} />}
+    >
+      Abort
+    </Button>
+  );
+};
 
-function Message({ path , handleClose }) {
+
+function Message({ path, handleClose, name }) {
+
+
+  const hanleClick = () => {
+    navigator.clipboard.writeText(path)
+  }
   return (
     <Box display="flex" alignItems="center" justifyContent="center" height="100%" mt={5}>
       <Box display="flex" alignItems="center" bgcolor="#F5F5F5" p={2}>
         {/* Icon */}
-      
+
         {/* Text */}
         <Box textAlign="center">
           <Typography sx={{
@@ -139,19 +172,20 @@ function Message({ path , handleClose }) {
           }} >
             File Downloaded
           </Typography>
-          <Button variant="outlined" color="primary" component="label"  sx={{
+          <Button variant="outlined" color="primary" component="label" sx={{
             fontSize: 12,
             fontWeight: 'bold',
-            color: pink[700] ,
+            color: pink[700],
             mt: 2
           }}
+            onClick={
+              hanleClick
+            }
 
           >
-             <input hidden type="file" accept={
-              "video/mp4,video/x-m4v,video/*"
-             } />
-               <VideoFileOutlined sx={{ fontSize: 35 ,color: pink[700] }} />
-            {path}
+
+            <VideoFileOutlined sx={{ fontSize: 35, color: pink[700] }} />
+            {name}
           </Button>
           <InputLabel
             htmlFor="contained-button-file"
@@ -162,12 +196,12 @@ function Message({ path , handleClose }) {
               mt: 3
             }}
           >
-            *Open file with right click
+            *click to copy the file link
           </InputLabel>
         </Box>
         {/* Close button */}
         <Box ml="auto">
-          <IconButton onClick={handleClose} sx={{ fontSize: 14}} >
+          <IconButton onClick={handleClose} sx={{ fontSize: 14 }} >
             <Close />
           </IconButton>
         </Box>
@@ -177,16 +211,25 @@ function Message({ path , handleClose }) {
 }
 
 
+function OnlineStatus({ online }) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Chip
+        label={online ? 'You are online !' : '*Please check your network connection !'}
+        color={online ? 'success' : 'error'}
+      />
+    </Box>
+  );
+}
+
+
 function App() {
 
 
-
+  const isOnline = useOnlineStatus();
   const [url, seturl] = useState("");
   const [quality, setquality] = useState("");
   const [format, setformat] = useState("");
-
-
-
 
   const [socket, setsocket] = useState(null);
   const [loading, setloading] = useState(false);
@@ -209,6 +252,8 @@ function App() {
   useEffect(() => {
     const socket = io("http://localhost:4500");
     setsocket(socket);
+    // setloading(localStorage.getItem('loading') ?? localStorage.getItem('loading'))
+
 
     return () => {
       socket.close();
@@ -223,6 +268,9 @@ function App() {
       disconnect();
       download_progress();
       end();
+      on_error();
+      onCancelDownload();
+      onStart()
     }
 
   }, [socket]);
@@ -243,6 +291,9 @@ function App() {
   const download_progress = () => {
     socket.on("downloadProgress", (data) => {
       setprogressBar(data)
+      if (!loading) {
+        setloading(true);
+      }
       console.log(data);
     });
   }
@@ -253,10 +304,25 @@ function App() {
 
   const end = () => {
     socket.on("end", (data) => {
-      setmessage(data)
+      setmessage(data.message)
+      delete data.message
+      setdata(data)
       setOpen(true)
+      setloading(false)
+      localStorage.removeItem("loading");
       console.log(data);
     });
+  }
+
+  const on_error = () => {
+    socket.on("downloadError", (data) => {
+      setmessage(data)
+      setloading(false)
+      setOpen(true)
+      localStorage.removeItem("loading");
+      console.log(data);
+    }
+    )
   }
 
 
@@ -283,17 +349,21 @@ function App() {
     if (
       url === "" ||
       quality === "" ||
-      format === ""
+      format === "" ||
+      !isOnline
     ) {
       return;
     }
+
+   
+
 
     setloading(true);
     localStorage.setItem("loading", true);
 
     const res = await axios.get(base_url + "download", {
       params: {
-        url: url,
+        url: url.includes('watch?v=') ? url.split('watch?v=')[1] : url,
         q: quality,
         t: format,
       }
@@ -301,32 +371,45 @@ function App() {
     });
 
     console.log(res.data);
-    setdata(res.data)
     setloading(false);
-    localStorage.removeItem("loading");
 
 
+  }
+
+  const onStart = () => {
+    socket.on("downloadStart", (data) => {
+      localStorage.setItem("uuid", data.uuid)
+    })
+  }
 
 
-    // const link = document.createElement("a");
-    // link.href = base_url + "download?url=" + url.current.value + "&q=" + quality.current.value + "&t=" + format.current.value + "&id=" + clientId;
-    // link.setAttribute("download", "video.mp4");
-    // document.body.appendChild(link);
+  const cancelDownload = () => {
+    if (socket && localStorage.getItem("uuid")) {
+      console.log("canceling")
+      socket.emit("cancel", {
+        uuid: localStorage.getItem("uuid")
+      })
+    }
+  }
 
-    // link.addEventListener("click", (event) => {
-    //   event.preventDefault(); // prevent the default link behavior
-    //   link.style.display = "none"; // hide the link
-    //   document.body.removeChild(link); // remove the link from the document
-
-    //   // download without reloading the page
-    //   window.open(link.href, "_blank");
-    //   //stay in the same page
-
-    // });
-    // link.click();
-
-
-
+  const onCancelDownload = () => {
+    socket.on("downloadAborted", (data) => {
+      setloading(false);
+      resetData();
+      setprogressBar({
+        progress: 0,
+        total: 0,
+        downloadSpeed:
+        {
+          percentage: 0,
+          speed: 0,
+          timeLeft: 0
+        }
+      })
+      localStorage.removeItem("loading")
+      setmessage(data)
+      setOpen(true)
+    })
   }
 
   const handleClose = () => {
@@ -339,17 +422,22 @@ function App() {
       <Container maxWidth="sm">
         <Box
           sx={{
-            pt: 5,
-            pb: 6,
+            pt: 2,
+            pb: 4,
             mb: 4,
-            mt:2
+            mt: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
 
         >
+          <OnlineStatus online={isOnline} />
           <Box
             sx={{
               bgcolor: 'background.paper',
-              p:2
+              pb: 2
             }}
           >
             <img
@@ -364,16 +452,6 @@ function App() {
             />
           </Box>
 
-          {/* <Typography
-            component="h3"
-            variant="h4"
-            align="center"
-            color="text.secondary"
-            gutterBottom
-          >
-            Youtube Downloader
-          </Typography> */}
-
           <Typography
             variant="h6"
             align="center"
@@ -385,7 +463,8 @@ function App() {
 
           {data?.name &&
             <Message
-              path={data.name}
+              name={data.name}
+              path={data.path}
               handleClose={resetData}
             />
           }
@@ -403,24 +482,29 @@ function App() {
           }
           {
             loading ? (
-              progressBar.downloadSpeed?.percentage > 0 && <CircularProgressWithLabel
-                value={progressBar.downloadSpeed.percentage}
-                time={
-                  progressBar.downloadSpeed.timeLeft
-                }
-                speed={
-                  progressBar.downloadSpeed.speed
-                }
-              />
-            ) : ( !data &&
+              progressBar.downloadSpeed?.percentage > 0 &&
+              <>
+                <AbortButton onClick={cancelDownload} />
+                <CircularProgressWithLabel
+                  value={progressBar.downloadSpeed.percentage}
+                  time={
+                    progressBar.downloadSpeed.timeLeft
+                  }
+                  speed={
+                    progressBar.downloadSpeed.speed
+                  }
+                />
+              </>
+            ) : (!data &&
               <form onSubmit={handleSubmit} >
-                <FormControl fullWidth sx={{ mt: 4 , mb:1}}>
+                <FormControl fullWidth sx={{ mt: 4, mb: 1 }}>
                   <TextField
                     fullWidth
                     id="url"
-                    label="Youtube Video ID"
+                    label="Youtube Video ID/URL"
                     variant="outlined"
                     required
+                    disabled={!isOnline}
                     onChange={
                       (e) => {
                         seturl(e.target.value)
@@ -438,6 +522,7 @@ function App() {
                     label="Quality"
                     variant="outlined"
                     required
+                    disabled={!isOnline}
                     value={quality}
                     onChange={
                       (e) => {
@@ -451,7 +536,7 @@ function App() {
                     <MenuItem value="lowest">Lowest</MenuItem>
                     <MenuItem value="highestaudio">Highest Audio</MenuItem>
                     <MenuItem value="lowestaudio">Lowest Audio</MenuItem>
-                
+
 
 
                   </Select>
@@ -464,6 +549,7 @@ function App() {
                     label="Format"
                     variant="outlined"
                     required
+                    disabled={!isOnline}
                     value={format}
                     onChange={(e) => {
                       setformat(e.target.value)
@@ -479,18 +565,25 @@ function App() {
 
                   </Select>
                 </FormControl>
-               
+
                 <Button
                   fullWidth
                   type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={loading}
-                  sx={{ mt: 3 , fontWeight : "bold"}}
+                  disabled={!isOnline}
+                  sx={{ mt: 3, fontWeight: "bold" }}
                 >
-                  <DownloadOutlined
-                    sx={{ fontSize: 35 , color: 'white' }}
-                  />Download
+                  {isOnline ?
+                    <>
+                      <DownloadOutlined
+                        sx={{ fontSize: 35, color: 'white' }}
+                      />Download
+                    </> :
+                    <SignalWifiOff
+                      sx={{ fontSize: 35, color: 'white' }}
+                    />
+                  }
                 </Button>
               </form>)
           }

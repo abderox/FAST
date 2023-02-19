@@ -13,6 +13,15 @@ FAST is a browser extension that allows you to easily download videos from YouTu
     />
 </p>
 
+
+## Features V1.0.1
+
+```diff
++ Online status detection
++ Tracking download status at any moment
++ Download abortion
+```
+
 ## Features V1.0.0
 
 - The FAST extension offers the following features:
@@ -32,28 +41,32 @@ FAST is a browser extension that allows you to easily download videos from YouTu
     <img
     src="./github/demo1.png"
     alt="logo"
-
     />
-</p>
-
-<p
- align="center"
->
     <img
     src="./github/demo2.png"
     alt="logo"
-
     />
-</p>
-
-<p
- align="center"
->
-    <img
+     <img
     src="./github/demo3.png"
     alt="logo"
-
     />
+     <img
+    src="./github/demo4.png"
+    alt="logo"
+    />
+     <img
+    src="./github/demo5.png"
+    alt="logo"
+    />
+     <img
+    src="./github/demo6.png"
+    alt="logo"
+    />
+     <img
+    src="./github/demo7.png"
+    alt="logo"
+    />
+
 </p>
 
 ## Main Technologies

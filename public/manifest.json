@@ -1,7 +1,7 @@
 {
   "short_name": "FAST",
   "name": "FAST",
-  "version": "1.0.0.0",
+  "version": "1.0.1.0",
   "description": "FAST {author : 'ABDELHADI MOUZAFIR'}",
   "permissions": [
     "scripting",
