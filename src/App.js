@@ -36,7 +36,7 @@ const theme = createTheme(
 
 function CircularProgressWithLabel(props) {
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', my: 2, ml: 1 }}>
+    <Box sx={{ position: 'relative', display: 'inline-flex', my: 2 }}>
 
       <CircularProgress variant="determinate" value={100} size={250} sx={{
         color: pink[100],
